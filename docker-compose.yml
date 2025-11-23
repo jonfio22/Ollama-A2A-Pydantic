@@ -1,0 +1,172 @@
+version: '3.8'
+
+services:
+  # Ollama service for local LLM inference
+  ollama:
+    image: ollama/ollama:latest
+    container_name: a2a-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:11434/api/tags"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+    networks:
+      - a2a-network
+
+  # Redis for task and context storage
+  redis:
+    image: redis:7-alpine
+    container_name: a2a-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - a2a-network
+
+  # Model initialization service (runs once to pull models)
+  model-init:
+    image: ollama/ollama:latest
+    container_name: a2a-model-init
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ./scripts/pull-models.sh:/pull-models.sh:ro
+      - ollama-data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=http://ollama:11434
+    entrypoint: ["/bin/sh", "/pull-models.sh"]
+    restart: "no"
+    networks:
+      - a2a-network
+
+  # Orchestrator agent
+  orchestrator:
+    build: .
+    container_name: a2a-orchestrator
+    environment:
+      - SERVICE_NAME=orchestrator
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - ORCHESTRATOR_MODEL=ollama:llama3.1:8b
+      - ORCHESTRATOR_PORT=8000
+      - ANALYST_PORT=8001
+      - CODER_PORT=8002
+      - VALIDATOR_PORT=8003
+      - HOST=0.0.0.0
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
+      model-init:
+        condition: service_completed_successfully
+    command: uvicorn main:orchestrator_app --host 0.0.0.0 --port 8000
+    restart: unless-stopped
+    networks:
+      - a2a-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Data analyst specialist
+  analyst:
+    build: .
+    container_name: a2a-analyst
+    environment:
+      - SERVICE_NAME=analyst
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - ANALYST_MODEL=ollama:qwen2.5:7b
+      - HOST=0.0.0.0
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis
+      - ollama
+      - model-init
+    command: uvicorn main:analyst_app --host 0.0.0.0 --port 8001
+    restart: unless-stopped
+    networks:
+      - a2a-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Code generator specialist
+  coder:
+    build: .
+    container_name: a2a-coder
+    environment:
+      - SERVICE_NAME=coder
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - CODER_MODEL=ollama:deepseek-coder-v2:16b
+      - HOST=0.0.0.0
+    ports:
+      - "8002:8002"
+    depends_on:
+      - redis
+      - ollama
+      - model-init
+    command: uvicorn main:coder_app --host 0.0.0.0 --port 8002
+    restart: unless-stopped
+    networks:
+      - a2a-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Validator specialist
+  validator:
+    build: .
+    container_name: a2a-validator
+    environment:
+      - SERVICE_NAME=validator
+      - REDIS_URL=redis://redis:6379
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - FAST_MODEL=ollama:llama3.2:3b
+      - HOST=0.0.0.0
+    ports:
+      - "8003:8003"
+    depends_on:
+      - redis
+      - ollama
+      - model-init
+    command: uvicorn main:validator_app --host 0.0.0.0 --port 8003
+    restart: unless-stopped
+    networks:
+      - a2a-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis-data:
+  ollama-data:
+
+networks:
+  a2a-network:
+    driver: bridge
