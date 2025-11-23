@@ -1,0 +1,17 @@
+# Core dependencies
+pydantic-ai>=0.0.14
+fasta2a>=0.1.0
+pydantic>=2.0.0
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+httpx>=0.25.0
+
+# Storage
+redis>=5.0.0
+
+# Optional observability
+logfire>=0.20.0
+
+# Development
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
