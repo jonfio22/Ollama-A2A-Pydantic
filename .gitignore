@@ -8,6 +8,10 @@ venv/
 env/
 ENV/
 .venv
+*.egg-info/
+dist/
+build/
+.python-version
 
 # Environment
 .env
@@ -25,6 +29,7 @@ htmlcov/
 
 # Logs
 *.log
+logs/
 
 # OS
 .DS_Store
