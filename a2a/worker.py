@@ -48,11 +48,11 @@ class PydanticAIWorker:
         try:
             result = await self.agent.run(message, deps=deps)
 
-            # Extract output
-            if hasattr(result.data, 'model_dump'):
-                output = result.data.model_dump()
+            # Extract output - use result.output instead of result.data
+            if hasattr(result.output, 'model_dump'):
+                output = result.output.model_dump()
             else:
-                output = str(result.data)
+                output = str(result.output)
 
             # Build A2A response
             response = {

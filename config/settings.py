@@ -21,7 +21,7 @@ class Settings:
     # Agent model configuration
     orchestrator_model: str = os.getenv("ORCHESTRATOR_MODEL", "ollama:llama3.1:8b")
     analyst_model: str = os.getenv("ANALYST_MODEL", "ollama:qwen2.5:7b")
-    coder_model: str = os.getenv("CODER_MODEL", "ollama:deepseek-coder-v2:16b")
+    coder_model: str = os.getenv("CODER_MODEL", "ollama:qwen2.5-coder:7b")
     fast_model: str = os.getenv("FAST_MODEL", "ollama:llama3.2:3b")
 
     # Server configuration

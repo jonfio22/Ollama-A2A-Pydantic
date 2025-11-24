@@ -108,11 +108,11 @@ class TaskResult(BaseModel):
 
 class OrchestratorOutput(BaseModel):
     """Output from orchestrator agent."""
-    task_results: Dict[str, TaskResult] = Field(description="Results from specialists")
-    synthesis: str = Field(description="Combined analysis and recommendations")
-    next_actions: List[str] = Field(description="Suggested next steps")
-    execution_strategy: str = Field(description="Strategy used (sequential/parallel)")
-    total_time: float = Field(description="Total execution time")
+    task_results: Dict[str, TaskResult] = Field(default_factory=dict, description="Results from specialists")
+    synthesis: str = Field(default="", description="Combined analysis and recommendations")
+    next_actions: List[str] = Field(default_factory=list, description="Suggested next steps")
+    execution_strategy: str = Field(default="direct", description="Strategy used (sequential/parallel/direct)")
+    total_time: float = Field(default=0.0, description="Total execution time")
 
 
 # ============================================================================
