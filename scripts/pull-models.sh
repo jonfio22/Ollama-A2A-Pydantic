@@ -23,22 +23,26 @@ if [ $attempt -eq $max_attempts ]; then
   exit 1
 fi
 
-# Pull models for different agents
+# Pull models for different agents (lightweight stack)
 echo ""
-echo "📥 Pulling orchestrator model (llama3.1:8b)..."
-ollama pull llama3.1:8b
+echo "📥 Pulling orchestrator model (phi3:3.8b)..."
+ollama pull phi3:3.8b
 
 echo ""
-echo "📥 Pulling analyst model (qwen2.5:7b)..."
-ollama pull qwen2.5:7b
+echo "📥 Pulling analyst model (mistral:7b)..."
+ollama pull mistral:7b
 
 echo ""
-echo "📥 Pulling coder model (deepseek-coder-v2:16b)..."
-ollama pull deepseek-coder-v2:16b
+echo "📥 Pulling coder model (deepseek-coder:6.7b)..."
+ollama pull deepseek-coder:6.7b
 
 echo ""
-echo "📥 Pulling fast model for validator (llama3.2:3b)..."
+echo "📥 Pulling validator model (llama3.2:3b)..."
 ollama pull llama3.2:3b
+
+echo ""
+echo "📥 Pulling vision model (moondream:1.8b)..."
+ollama pull moondream:1.8b
 
 echo ""
 echo "✅ All models pulled successfully!"
