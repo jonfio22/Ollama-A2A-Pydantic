@@ -9,12 +9,14 @@ from models.dependencies import (
     AnalystDependencies,
     CoderDependencies,
     ValidatorDependencies,
+    VisionAgentDependencies,
     OrchestratorDependencies
 )
 from storage.memory_storage import MemorySimpleStorage
 from agents.specialists.analyst import data_analyst_agent
 from agents.specialists.coder import code_generator_agent
 from agents.specialists.validator import validator_agent
+from agents.specialists.vision import vision_agent
 from agents.orchestrator import orchestrator_agent
 from a2a.server import AgentMetadata, create_a2a_app
 
@@ -149,6 +151,51 @@ validator_app.router.lifespan_context = lifespan
 
 
 # ============================================================================
+# Vision Agent Setup
+# ============================================================================
+
+def create_vision_deps(**kwargs):
+    """Factory for vision dependencies."""
+    return VisionAgentDependencies(
+        agent_id="vision-specialist",
+        storage=MemorySimpleStorage(),
+        cache_enabled=True,
+        max_image_size_mb=10,
+        ocr_language="en",
+        image_quality="high",
+        enable_safety_check=True
+    )
+
+
+vision_metadata = AgentMetadata(
+    name="Vision Specialist Agent",
+    version="1.0.0",
+    description="Specialist agent for image analysis, OCR, visual understanding, and prompt generation",
+    capabilities={
+        "tools": [
+            "analyze_image_content",
+            "extract_text_ocr",
+            "generate_image_prompt",
+            "validate_image_requirements",
+            "cache_vision_analysis",
+            "enhance_prompt_with_context"
+        ],
+        "model": settings.vision_model,
+        "input_formats": ["base64", "url"],
+        "output_formats": ["analysis_json", "generation_prompts"],
+        "strengths": ["multimodal understanding", "OCR", "prompt engineering", "style analysis"]
+    }
+)
+
+vision_app = create_a2a_app(
+    agent=vision_agent,
+    metadata=vision_metadata,
+    deps_factory=create_vision_deps
+)
+vision_app.router.lifespan_context = lifespan
+
+
+# ============================================================================
 # Orchestrator Agent Setup
 # ============================================================================
 
@@ -160,6 +207,7 @@ def create_orchestrator_deps(**kwargs):
             "analyst": f"http://{settings.host}:{settings.analyst_port}",
             "coder": f"http://{settings.host}:{settings.coder_port}",
             "validator": f"http://{settings.host}:{settings.validator_port}",
+            "vision": f"http://{settings.host}:{settings.vision_port}",
         },
         http_client=http_client,
         task_storage=MemorySimpleStorage(),
@@ -179,7 +227,7 @@ orchestrator_metadata = AgentMetadata(
             "analyze_task_complexity"
         ],
         "model": settings.orchestrator_model,
-        "specialists": ["analyst", "coder", "validator"],
+        "specialists": ["analyst", "coder", "validator", "vision"],
         "execution_modes": ["sequential", "parallel", "hybrid"],
         "strengths": ["task coordination", "result synthesis", "parallel execution"]
     }
@@ -207,6 +255,7 @@ __all__ = [
     "analyst_app",
     "coder_app",
     "validator_app",
+    "vision_app",
     "orchestrator_app"
 ]
 
@@ -249,6 +298,12 @@ async def run_all_servers():
             port=settings.validator_port,
             log_level=settings.log_level.lower()
         ),
+        uvicorn.Config(
+            "main:vision_app",
+            host=settings.host,
+            port=settings.vision_port,
+            log_level=settings.log_level.lower()
+        ),
     ]
 
     # Run servers concurrently
@@ -262,6 +317,7 @@ if __name__ == "__main__":
     print(f"📈 Analyst: http://{settings.host}:{settings.analyst_port}")
     print(f"💻 Coder: http://{settings.host}:{settings.coder_port}")
     print(f"✅ Validator: http://{settings.host}:{settings.validator_port}")
+    print(f"👁️  Vision: http://{settings.host}:{settings.vision_port}")
     print("\nNote: Run with separate uvicorn commands or docker-compose for production")
     print("Example: uvicorn main:orchestrator_app --port 8000\n")
 

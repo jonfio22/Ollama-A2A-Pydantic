@@ -25,6 +25,7 @@ orchestrator_agent = create_orchestrator_agent(
     - analyst: Data analysis, statistics, trend identification (strong analytical reasoning)
     - coder: Code generation, testing, syntax validation (specialized for coding)
     - validator: Quality assurance, format validation, completeness checks (fast validation)
+    - vision: Image analysis, OCR, visual understanding, prompt generation for image models (multimodal)
 
     Decision guidelines:
     - For simple greetings or casual conversation, respond directly WITHOUT using any tools
@@ -287,6 +288,7 @@ async def analyze_task_complexity(
     needs_analyst = any(word in words for word in ['analyze', 'data', 'statistics', 'trend'])
     needs_coder = any(word in words for word in ['code', 'program', 'function', 'script'])
     needs_validator = any(word in words for word in ['validate', 'check', 'verify', 'quality'])
+    needs_vision = any(word in words for word in ['image', 'picture', 'photo', 'screenshot', 'visual', 'ocr', 'describe', 'analyze'])
 
     specialists_needed = []
     if needs_analyst:
@@ -295,6 +297,8 @@ async def analyze_task_complexity(
         specialists_needed.append("coder")
     if needs_validator:
         specialists_needed.append("validator")
+    if needs_vision:
+        specialists_needed.append("vision")
 
     # Determine recommended strategy
     if has_dependencies:

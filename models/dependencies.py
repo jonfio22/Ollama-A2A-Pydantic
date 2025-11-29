@@ -104,3 +104,15 @@ class ValidatorDependencies:
     agent_id: str
     storage: StorageInterface
     strict_mode: bool = False
+
+
+@dataclass
+class VisionAgentDependencies:
+    """Dependencies for vision analysis agent."""
+    agent_id: str
+    storage: StorageInterface
+    cache_enabled: bool = True
+    max_image_size_mb: int = 10
+    ocr_language: str = "en"
+    image_quality: str = "high"
+    enable_safety_check: bool = True

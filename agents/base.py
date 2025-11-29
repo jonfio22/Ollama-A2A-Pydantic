@@ -5,6 +5,7 @@ from pydantic_ai import Agent
 from pydantic_ai.models.openai import OpenAIChatModel
 from pydantic_ai.providers.ollama import OllamaProvider
 from pydantic_ai.output import PromptedOutput
+from config.settings import settings
 
 DepsT = TypeVar('DepsT')
 OutputT = TypeVar('OutputT', bound=BaseModel)
@@ -83,7 +84,7 @@ def create_fast_agent(
     output_type: Type[OutputT]
 ) -> Agent[DepsT, OutputT]:
     """
-    Create a fast agent using llama3.2:3b for quick tasks.
+    Create a fast agent using the configured fast model for quick tasks.
 
     Args:
         agent_id: Unique identifier for this agent
@@ -95,7 +96,7 @@ def create_fast_agent(
         Fast-configured agent
     """
     return create_agent(
-        model='llama3.2:3b',
+        model=settings.fast_model,
         agent_id=agent_id,
         instructions=instructions,
         deps_type=deps_type,
@@ -110,7 +111,7 @@ def create_analytical_agent(
     output_type: Type[OutputT]
 ) -> Agent[DepsT, OutputT]:
     """
-    Create an analytical agent using qwen2.5:7b for data analysis.
+    Create an analytical agent using the configured analyst model for data analysis.
 
     Args:
         agent_id: Unique identifier for this agent
@@ -122,7 +123,7 @@ def create_analytical_agent(
         Analytical agent
     """
     return create_agent(
-        model='qwen2.5:7b',
+        model=settings.analyst_model,
         agent_id=agent_id,
         instructions=instructions,
         deps_type=deps_type,
@@ -137,10 +138,10 @@ def create_coding_agent(
     output_type: Type[OutputT]
 ) -> Agent[DepsT, OutputT]:
     """
-    Create a coding agent using qwen2.5-coder:7b for code generation.
+    Create a coding agent using the configured coder model for code generation.
 
-    Note: Using qwen2.5-coder instead of deepseek-coder-v2 because
-    deepseek-coder-v2:16b does not support tools in Ollama.
+    Note: Model is configurable via CODER_MODEL env var. Default uses deepseek-coder:7b
+    for superior code generation performance.
 
     Args:
         agent_id: Unique identifier for this agent
@@ -152,7 +153,7 @@ def create_coding_agent(
         Coding specialist agent
     """
     return create_agent(
-        model='qwen2.5-coder:7b',
+        model=settings.coder_model,
         agent_id=agent_id,
         instructions=instructions,
         deps_type=deps_type,
@@ -167,10 +168,11 @@ def create_orchestrator_agent(
     output_type: Type[OutputT]
 ) -> Agent[DepsT, OutputT]:
     """
-    Create an orchestrator agent using llama3.1:8b for coordination.
+    Create an orchestrator agent using the configured orchestrator model for coordination.
 
     Note: Orchestrator needs more output retries due to complex structured output
-    with nested models and multiple fields.
+    with nested models and multiple fields. Default uses phi-4:14b for superior
+    reasoning and task decomposition.
 
     Args:
         agent_id: Unique identifier for this agent
@@ -182,10 +184,42 @@ def create_orchestrator_agent(
         Orchestrator agent
     """
     return create_agent(
-        model='llama3.1:8b',
+        model=settings.orchestrator_model,
         agent_id=agent_id,
         instructions=instructions,
         deps_type=deps_type,
         output_type=output_type,
         output_retries=8  # Higher retries for complex orchestration output
+    )
+
+
+def create_vision_agent(
+    agent_id: str,
+    instructions: str,
+    deps_type: Type[DepsT],
+    output_type: Type[OutputT]
+) -> Agent[DepsT, OutputT]:
+    """
+    Create a vision agent using the configured vision model for multimodal tasks.
+
+    Note: Vision inference can be more variable; uses extra retries for reliability.
+    Default uses minicpm-v:latest (8B multimodal model) for efficient image understanding.
+
+    Args:
+        agent_id: Unique identifier for this agent
+        instructions: System instructions
+        deps_type: Dependencies type
+        output_type: Output type
+
+    Returns:
+        Vision specialist agent
+    """
+    return create_agent(
+        model=settings.vision_model,
+        agent_id=agent_id,
+        instructions=instructions,
+        deps_type=deps_type,
+        output_type=output_type,
+        retries=3,  # Vision inference can be flakier
+        output_retries=5  # More retries for multimodal output complexity
     )

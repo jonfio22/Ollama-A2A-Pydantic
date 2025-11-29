@@ -22,6 +22,7 @@ class AgentRole(str, Enum):
     ANALYST = "analyst"
     CODER = "coder"
     VALIDATOR = "validator"
+    VISION = "vision"
 
 
 # ============================================================================
@@ -92,6 +93,23 @@ class ValidationOutput(BaseModel):
     issues: List[str] = Field(description="Issues found")
     suggestions: List[str] = Field(description="Improvement suggestions")
     score: float = Field(ge=0, le=1, description="Quality score")
+
+
+# ============================================================================
+# Vision Analysis Models
+# ============================================================================
+
+class VisionOutput(BaseModel):
+    """Output from vision analysis agent."""
+    visual_description: str = Field(description="Detailed visual description")
+    detected_objects: List[str] = Field(default_factory=list, description="Objects identified in image")
+    extracted_text: Optional[str] = Field(None, description="OCR-extracted text")
+    generated_prompts: Optional[Dict[str, str]] = Field(None, description="Image generation prompts")
+    style_analysis: Optional[Dict[str, Any]] = Field(None, description="Style characteristics")
+    validation_results: Optional[Dict[str, Any]] = Field(None, description="Validation outcomes")
+    confidence_score: float = Field(ge=0, le=1, description="Analysis confidence")
+    reasoning: Optional[str] = Field(None, description="Analysis reasoning process")
+    recommendations: List[str] = Field(default_factory=list, description="Actionable suggestions")
 
 
 # ============================================================================
