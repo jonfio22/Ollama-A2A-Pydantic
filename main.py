@@ -59,6 +59,7 @@ analyst_metadata = AgentMetadata(
             "cache_result"
         ],
         "model": settings.analyst_model,
+        "model_size": "7B (mistral) - excellent multilingual + reasoning",
         "strengths": ["data analysis", "statistical reasoning", "pattern recognition"]
     }
 )
@@ -98,6 +99,7 @@ coder_metadata = AgentMetadata(
             "get_code_template"
         ],
         "model": settings.coder_model,
+        "model_size": "7B (deepseek-coder) - specialized for code generation",
         "languages": ["python", "javascript", "typescript", "go"],
         "strengths": ["code generation", "syntax validation", "test generation"]
     }
@@ -137,6 +139,7 @@ validator_metadata = AgentMetadata(
             "validate_against_schema"
         ],
         "model": settings.fast_model,
+        "model_size": "3B (llama3.2) - ultra-fast lightweight validation",
         "formats": ["json", "xml", "email", "url", "phone"],
         "strengths": ["fast validation", "format checking", "quality assurance"]
     }
@@ -170,7 +173,7 @@ def create_vision_deps(**kwargs):
 vision_metadata = AgentMetadata(
     name="Vision Specialist Agent",
     version="1.0.0",
-    description="Specialist agent for image analysis, OCR, visual understanding, and prompt generation",
+    description="Specialist agent for lightweight image analysis, OCR, and prompt generation",
     capabilities={
         "tools": [
             "analyze_image_content",
@@ -181,9 +184,10 @@ vision_metadata = AgentMetadata(
             "enhance_prompt_with_context"
         ],
         "model": settings.vision_model,
+        "model_size": "1.8B (moondream) - ultra-lightweight for local deployment",
         "input_formats": ["base64", "url"],
         "output_formats": ["analysis_json", "generation_prompts"],
-        "strengths": ["multimodal understanding", "OCR", "prompt engineering", "style analysis"]
+        "strengths": ["fast inference", "lightweight", "OCR basics", "prompt templates"]
     }
 )
 
@@ -227,6 +231,7 @@ orchestrator_metadata = AgentMetadata(
             "analyze_task_complexity"
         ],
         "model": settings.orchestrator_model,
+        "model_size": "3.8B (phi-3.5-mini) - 50% smaller than original llama3.1:8b",
         "specialists": ["analyst", "coder", "validator", "vision"],
         "execution_modes": ["sequential", "parallel", "hybrid"],
         "strengths": ["task coordination", "result synthesis", "parallel execution"]

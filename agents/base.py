@@ -171,8 +171,8 @@ def create_orchestrator_agent(
     Create an orchestrator agent using the configured orchestrator model for coordination.
 
     Note: Orchestrator needs more output retries due to complex structured output
-    with nested models and multiple fields. Default uses phi-4:14b for superior
-    reasoning and task decomposition.
+    with nested models and multiple fields. Default uses phi-3.5-mini:3.8b for lightweight
+    efficient reasoning with strong task decomposition (50% smaller than original).
 
     Args:
         agent_id: Unique identifier for this agent
@@ -203,7 +203,8 @@ def create_vision_agent(
     Create a vision agent using the configured vision model for multimodal tasks.
 
     Note: Vision inference can be more variable; uses extra retries for reliability.
-    Default uses minicpm-v:latest (8B multimodal model) for efficient image understanding.
+    Default uses moondream:1.8b (lightweight multimodal model) for fast image understanding
+    on resource-constrained systems. For higher quality, use minicpm-v:latest instead.
 
     Args:
         agent_id: Unique identifier for this agent
