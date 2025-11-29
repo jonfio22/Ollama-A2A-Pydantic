@@ -19,9 +19,9 @@ class Settings:
     service_name: str = os.getenv("SERVICE_NAME", "a2a-orchestration")
 
     # Agent model configuration
-    orchestrator_model: str = os.getenv("ORCHESTRATOR_MODEL", "ollama:phi-3.5-mini:3.8b")
+    orchestrator_model: str = os.getenv("ORCHESTRATOR_MODEL", "ollama:mistral:7b")
     analyst_model: str = os.getenv("ANALYST_MODEL", "ollama:mistral:7b")
-    coder_model: str = os.getenv("CODER_MODEL", "ollama:deepseek-coder:7b")
+    coder_model: str = os.getenv("CODER_MODEL", "ollama:deepseek-coder:6.7b")
     fast_model: str = os.getenv("FAST_MODEL", "ollama:llama3.2:3b")
     vision_model: str = os.getenv("VISION_MODEL", "ollama:moondream:1.8b")
 

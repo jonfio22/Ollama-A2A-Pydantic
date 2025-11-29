@@ -41,7 +41,7 @@ echo "3️⃣  Pulling required models..."
 echo "   This may take a while depending on your internet connection."
 echo ""
 
-models=("llama3.1:8b" "qwen2.5:7b" "deepseek-coder-v2:16b" "llama3.2:3b")
+models=("phi3:3.8b" "mistral:7b" "deepseek-coder:6.7b" "llama3.2:3b" "moondream:1.8b")
 
 for model in "${models[@]}"; do
     echo "📥 Pulling $model..."
@@ -111,6 +111,7 @@ echo "   Terminal 1: uvicorn main:orchestrator_app --port 8000"
 echo "   Terminal 2: uvicorn main:analyst_app --port 8001"
 echo "   Terminal 3: uvicorn main:coder_app --port 8002"
 echo "   Terminal 4: uvicorn main:validator_app --port 8003"
+echo "   Terminal 5: uvicorn main:vision_app --port 8004"
 echo ""
 echo "3. Or use Docker Compose:"
 echo "   docker-compose up"

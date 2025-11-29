@@ -231,7 +231,7 @@ orchestrator_metadata = AgentMetadata(
             "analyze_task_complexity"
         ],
         "model": settings.orchestrator_model,
-        "model_size": "3.8B (phi-3.5-mini) - 50% smaller than original llama3.1:8b",
+        "model_size": "7B (mistral) - excellent reasoning and tool use",
         "specialists": ["analyst", "coder", "validator", "vision"],
         "execution_modes": ["sequential", "parallel", "hybrid"],
         "strengths": ["task coordination", "result synthesis", "parallel execution"]

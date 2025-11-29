@@ -140,7 +140,7 @@ def create_coding_agent(
     """
     Create a coding agent using the configured coder model for code generation.
 
-    Note: Model is configurable via CODER_MODEL env var. Default uses deepseek-coder:7b
+    Note: Model is configurable via CODER_MODEL env var. Default uses deepseek-coder:6.7b
     for superior code generation performance.
 
     Args:
@@ -171,7 +171,7 @@ def create_orchestrator_agent(
     Create an orchestrator agent using the configured orchestrator model for coordination.
 
     Note: Orchestrator needs more output retries due to complex structured output
-    with nested models and multiple fields. Default uses phi-3.5-mini:3.8b for lightweight
+    with nested models and multiple fields. Default uses phi3:3.8b for lightweight
     efficient reasoning with strong task decomposition (50% smaller than original).
 
     Args:
